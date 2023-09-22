@@ -1,6 +1,7 @@
 using Ecommerce.interfaces;
 using Ecommerce.Models;
 using Ecommerce.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.Repositories{
     public class UserRepo : IUserRepo
@@ -16,7 +17,6 @@ namespace Ecommerce.Repositories{
         {
             try{
                 _context.Users.Add(user);
-                _context.SaveChanges();
                 return user;
             }
             catch(Exception ex)
@@ -25,14 +25,14 @@ namespace Ecommerce.Repositories{
             }
         }
 
-        public User? Get(int id)
+        public async Task<User?> Get(int id)
         {
-            return _context.Users.FirstOrDefault(a => a.Id == id);
+            return await _context.Users.FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public List<User> GetAll()
+        public async Task<List<User>> GetAll()
         {
-            return _context.Users.ToList();
+            return await _context.Users.ToListAsync();
         }
         
     }

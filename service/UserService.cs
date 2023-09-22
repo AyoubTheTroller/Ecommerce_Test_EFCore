@@ -12,21 +12,21 @@ namespace Ecommerce.services
             _unitOfWork = unitOfWork;
         }
 
-        public User addUser(User user)
+        public async Task<User> addUser(User user)
         {
             var addedUser = _unitOfWork.UserRepository.Add(user);
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitAsync();
             return addedUser;
         }
 
-        public List<User> getAllUsers()
+        public async Task<List<User>> getAllUsers()
         {
-            return _unitOfWork.UserRepository.GetAll();
+            return await _unitOfWork.UserRepository.GetAll();
         }
 
-        public User? getUser(int id)
+        public async Task<User?> getUser(int id)
         {
-            return _unitOfWork.UserRepository.Get(id);
+            return await _unitOfWork.UserRepository.Get(id);
         }
     }
 }

@@ -2,7 +2,7 @@ using Ecommerce.Models;
 namespace Ecommerce.interfaces{
     public interface IUserRepo{
         public User Add(User user);
-        public User? Get(int id);
-        public List<User> GetAll();
+        public Task<User?> Get(int id);
+        public Task<List<User>> GetAll();
     }
 }
