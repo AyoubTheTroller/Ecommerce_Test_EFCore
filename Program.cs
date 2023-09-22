@@ -1,18 +1,26 @@
 using Microsoft.EntityFrameworkCore;
+using Ecommerce.Data;
+using Ecommerce.interfaces;
+using Ecommerce.services;
+using Ecommerce.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<EcommerceDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
+using (var scope = app.Services.CreateScope()){
     var context = scope.ServiceProvider.GetRequiredService<EcommerceDbContext>();
-    context.Database.Migrate(); // Or via terminal (dotnet ef database update)
+    context.Database.Migrate();
 }
 
-app.MapGet("/", () => "Hello World!");
+Ecommerce.Controllers.UserController.MapUserRoutes(app);
 
 app.Run();

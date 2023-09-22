@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>EF_Core_Project_Ecommerce</RootNamespace>
+    
+    <OutputPath>bin\Main\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
