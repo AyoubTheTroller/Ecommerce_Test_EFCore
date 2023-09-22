@@ -1,0 +1,1 @@
+Simple project with the purpose of testing EF Core.
