@@ -15,6 +15,8 @@ builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 
@@ -25,5 +27,6 @@ using (var scope = app.Services.CreateScope()){
 
 Ecommerce.Controllers.UserController.MapUserRoutes(app);
 Ecommerce.Controllers.ProductController.MapProductRoutes(app);
+Ecommerce.Controllers.CategoryController.MapCategoryRoutes(app);
 
 app.Run();
