@@ -14,7 +14,7 @@ namespace Ecommerce.services
 
         public async Task<User> addUser(User user)
         {
-            var addedUser = _unitOfWork.UserRepository.Add(user);
+            var addedUser = await _unitOfWork.UserRepository.Add(user);
             await _unitOfWork.CommitAsync();
             return addedUser;
         }

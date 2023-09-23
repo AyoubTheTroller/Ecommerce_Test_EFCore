@@ -1,5 +1,6 @@
 using Ecommerce.Models;
 using Ecommerce.interfaces;
+using Ecommerce.Exceptions;
 
 namespace Ecommerce.Controllers{
     public static class UserController{
@@ -10,13 +11,13 @@ namespace Ecommerce.Controllers{
         }
 
         private static void MapGetAllUsers(WebApplication app){
-            app.MapGet("/users", (IUserService userService) => userService.getAllUsers());
+            app.MapGet("/users", async (IUserService userService) => await userService.getAllUsers());
         }
 
         private static void MapGetUserById(WebApplication app){
-            app.MapGet("/users/{id:int}", (int id, IUserService userService) =>
+            app.MapGet("/users/{id:int}", async (int id, IUserService userService) =>
             {
-                var user = userService.getUser(id);
+                var user = await userService.getUser(id);
                 if (user == null)
                 {
                     return Results.NotFound($"User with ID {id} was not found.");
@@ -26,15 +27,19 @@ namespace Ecommerce.Controllers{
         }
 
         private static void MapCreateUser(WebApplication app){
-            app.MapPost("/users", (User user, IUserService userService) =>
+            app.MapPost("/users/create", async (User user, IUserService userService) =>
             {
                 if (user == null)
                 {
                     return Results.BadRequest("Invalid user data.");
                 }
-
-                var addedUser = userService.addUser(user);
-                return Results.Created($"/users/{addedUser.Id}", addedUser);
+                try{
+                    var addedUser = await userService.addUser(user);
+                    return Results.Created($"/users/create/{addedUser.Id}", addedUser);
+                }
+                catch(UserAlreadyExistsException ex){
+                    return Results.Conflict(ex.Message);
+                }
             });
         }
     }

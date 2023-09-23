@@ -1,22 +1,22 @@
 using Ecommerce.interfaces;
-using Ecommerce.Repositories;
-namespace Ecommerce.Data{
-    public class UnitOfWork : IUnitOfWork{
+namespace Ecommerce.Data {
+    public class UnitOfWork : IUnitOfWork {
         private readonly EcommerceDbContext _context;
-        public IUserRepo UserRepository { get; private set; }
+        public IUserRepo UserRepository { get; }
+        public IProductRepo ProductRepository { get; }
 
-        public UnitOfWork(EcommerceDbContext context){
+        public UnitOfWork(EcommerceDbContext context, IUserRepo userRepo, IProductRepo productRepo) {
             _context = context;
-            UserRepository = new UserRepo(_context);
+            UserRepository = userRepo;
+            ProductRepository = productRepo;
         }
 
-        public async Task CommitAsync(){
+        public async Task CommitAsync() {
             await _context.SaveChangesAsync();
         }
 
-        public void Dispose(){
-            _context?.Dispose();
+        public async ValueTask DisposeAsync() {
+            await _context.DisposeAsync();
         }
     }
-
 }

@@ -13,6 +13,8 @@ builder.Services.AddDbContext<EcommerceDbContext>(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IProductRepo, ProductRepo>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
 
@@ -22,5 +24,6 @@ using (var scope = app.Services.CreateScope()){
 }
 
 Ecommerce.Controllers.UserController.MapUserRoutes(app);
+Ecommerce.Controllers.ProductController.MapProductRoutes(app);
 
 app.Run();
