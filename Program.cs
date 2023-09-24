@@ -3,6 +3,7 @@ using Ecommerce.Data;
 using Ecommerce.interfaces;
 using Ecommerce.services;
 using Ecommerce.Repositories;
+using Ecommerce.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,11 @@ builder.Services.AddScoped<IProductRepo, ProductRepo>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IOrderDetailRepo, OrderDetailRepo>();
+builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
+builder.Services.AddScoped<IOrderRepo, OrderRepo>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+
 
 var app = builder.Build();
 
@@ -28,5 +34,6 @@ using (var scope = app.Services.CreateScope()){
 Ecommerce.Controllers.UserController.MapUserRoutes(app);
 Ecommerce.Controllers.ProductController.MapProductRoutes(app);
 Ecommerce.Controllers.CategoryController.MapCategoryRoutes(app);
+Ecommerce.Controllers.OrderController.MapOrderRoutes(app);
 
 app.Run();

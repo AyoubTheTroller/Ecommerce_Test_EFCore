@@ -6,13 +6,15 @@ namespace Ecommerce.Data {
         public IProductRepo ProductRepository { get; }
         public ICategoryRepo CategoryRepository {get; }
         public IOrderDetailRepo OrderDetailRepository {get; }
+        public IOrderRepo OrderRepository {get; }
 
-        public UnitOfWork(EcommerceDbContext context, IUserRepo userRepo, IProductRepo productRepo, ICategoryRepo categoryRepo, IOrderDetailRepo orderDetailRepo) {
+        public UnitOfWork(EcommerceDbContext context, IUserRepo userRepo, IProductRepo productRepo, ICategoryRepo categoryRepo, IOrderDetailRepo orderDetailRepo, IOrderRepo orderRepo) {
             _context = context;
             UserRepository = userRepo;
             ProductRepository = productRepo;
             CategoryRepository = categoryRepo;
             OrderDetailRepository = orderDetailRepo;
+            OrderRepository = orderRepo;
         }
 
         public async Task CommitAsync() {

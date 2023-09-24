@@ -4,6 +4,7 @@ namespace Ecommerce.interfaces{
         IProductRepo ProductRepository {get;}
         ICategoryRepo CategoryRepository {get;}
         IOrderDetailRepo OrderDetailRepository {get;}
+        IOrderRepo OrderRepository {get;}
         public Task CommitAsync();
     }
 }
