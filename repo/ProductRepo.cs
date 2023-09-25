@@ -2,6 +2,7 @@ using Ecommerce.interfaces;
 using Ecommerce.Models;
 using Ecommerce.Data;
 using Microsoft.EntityFrameworkCore;
+using Ecommerce.Exceptions;
 
 namespace Ecommerce.Repositories{
     public class ProductRepo : IProductRepo
@@ -22,8 +23,10 @@ namespace Ecommerce.Repositories{
         }
 
         public async Task<Product?> GetById(int id)
-        {
-            return await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+        {   
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);;
+            if(product != null) return product;
+            else throw new ProductNotFoundException(id);
         }
 
         public async Task<List<Product>> GetAll()
