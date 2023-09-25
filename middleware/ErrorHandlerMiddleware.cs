@@ -24,16 +24,24 @@ namespace Ecommerce.Middlewares{
             }
         }
 
+        private static readonly Dictionary<Type, HttpStatusCode> _exceptionToStatusCode = new Dictionary<Type, HttpStatusCode>
+        {
+            { typeof(OrderMissingProductException), HttpStatusCode.BadRequest },
+            { typeof(OrderMissingOrderDetailsException), HttpStatusCode.BadRequest },
+            { typeof(ArgumentNullException), HttpStatusCode.BadRequest },
+            { typeof(ProductsByCategorySlugNotFound), HttpStatusCode.NotFound },
+            { typeof(ProductNotFoundException), HttpStatusCode.NotFound },
+            { typeof(ApplicationException), HttpStatusCode.BadRequest }
+        };
+
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
             var code = HttpStatusCode.InternalServerError;
 
-            if (ex is OrderMissingProductException) code = HttpStatusCode.BadRequest;
-            else if (ex is OrderMissingOrderDetailsException) code = HttpStatusCode.BadRequest;
-            else if (ex is ArgumentNullException) code = HttpStatusCode.BadRequest;
-            else if (ex is ProductsByCategorySlugNotFound) code = HttpStatusCode.NotFound;
-            else if (ex is ProductNotFoundException) code = HttpStatusCode.NotFound;
-            else if (ex is ApplicationException) code = HttpStatusCode.BadRequest;
+            if (_exceptionToStatusCode.TryGetValue(ex.GetType(), out var statusCode))
+            {
+                code = statusCode;
+            }
 
             var result = JsonSerializer.Serialize(new { error = ex.Message });
             context.Response.ContentType = "application/json";
@@ -41,5 +49,6 @@ namespace Ecommerce.Middlewares{
 
             return context.Response.WriteAsync(result);
         }
+
     }
 }
