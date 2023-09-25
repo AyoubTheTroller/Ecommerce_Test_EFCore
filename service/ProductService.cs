@@ -32,5 +32,10 @@ namespace Ecommerce.services
         public async Task<List<Product>?> getAllProductsByCategorySlug(string slug){
             return await _unitOfWork.ProductRepository.GetAllByCategorySlug(slug);
         }
+
+        public async Task<List<Product>?> getAllProductsByPriceRange(double min, double max)
+        {
+            return await _unitOfWork.ProductRepository.GetAllByPriceRange(min,max);
+        }
     }
 }

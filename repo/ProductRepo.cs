@@ -39,5 +39,11 @@ namespace Ecommerce.Repositories{
             if (!products.Any()) throw new ProductsByCategorySlugNotFound(slug);
             return products;
         }
+
+        public async Task<List<Product>?> GetAllByPriceRange(double min, double max){
+            var products = await _context.Products.Where(p => p.price >= min && p.price <= max).ToListAsync();
+            if (!products.Any()) throw new ProductsByPriceRangeNotFound(min,max);
+            return products;
+        }
     }
 }

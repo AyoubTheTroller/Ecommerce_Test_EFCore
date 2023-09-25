@@ -8,6 +8,7 @@ namespace Ecommerce.Controllers{
             MapGetProductById(app);
             MapCreateProduct(app);
             MapGetAllProductsByCategorySlug(app);
+            MapGetAllProductsByPriceRange(app);
         }
 
         private static void MapGetAllProductsByCategorySlug(WebApplication app)
@@ -15,6 +16,15 @@ namespace Ecommerce.Controllers{
             app.MapGet("/products/category/{slug}", async (string slug, IProductService productService) =>
             {
                 var products = await productService.getAllProductsByCategorySlug(slug);
+                return Results.Ok(products);
+            });
+        }
+
+        private static void MapGetAllProductsByPriceRange(WebApplication app)
+        {
+            app.MapGet("/products/price/{min}-{max}", async (double min,double max, IProductService productService) =>
+            {
+                var products = await productService.getAllProductsByPriceRange(min,max);
                 return Results.Ok(products);
             });
         }
