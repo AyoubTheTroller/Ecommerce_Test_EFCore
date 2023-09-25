@@ -34,38 +34,26 @@ namespace Ecommerce.Controllers{
         private static async Task<IResult> CreateOrderHandler(Order order, IOrderService orderService){
             if (order == null)
             {
-                return Results.BadRequest("Invalid order data.");
+                throw new ArgumentNullException("Invalid order data.");
             }
 
-            try
-            {
-                var addedOrder = await orderService.addOrder(order);
+            var addedOrder = await orderService.addOrder(order);
 
-                var orderDTO = new OrderDTO
+            var orderDTO = new OrderDTO
+            {
+                Id = addedOrder.Id,
+                UserId = addedOrder.userId,
+                DateTime = addedOrder.dateTime,
+                TotalPrice = addedOrder.totalPrice,
+                OrderDetails = addedOrder.OrderDetails.Select(detail => new OrderDetailDTO 
                 {
-                    Id = addedOrder.Id,
-                    UserId = addedOrder.userId,
-                    DateTime = addedOrder.dateTime,
-                    TotalPrice = addedOrder.totalPrice,
-                    OrderDetails = addedOrder.OrderDetails.Select(detail => new OrderDetailDTO 
-                    {
-                        Id = detail.Id,
-                        ProductId = detail.productId
-                    }).ToList()
-                };
+                    Id = detail.Id,
+                    ProductId = detail.productId
+                }).ToList()
+            };
 
-                return Results.Ok(orderDTO);
-            }
-            catch (Exception e)when (e is OrderMissingProductException || e is OrderMissingOrderDetailsException)
-            {
-                return Results.BadRequest(e.Message);
-            }
-            catch (Exception e)
-            {
-                return Results.BadRequest($"An unexpected error occurred: {e.Message}");
-            }
+            return Results.Ok(orderDTO);
         }
-
 
     }
 }

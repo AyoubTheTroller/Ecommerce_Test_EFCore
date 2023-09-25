@@ -4,6 +4,7 @@ using Ecommerce.interfaces;
 using Ecommerce.services;
 using Ecommerce.Repositories;
 using Ecommerce.Models;
+using Ecommerce.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,11 @@ using (var scope = app.Services.CreateScope()){
     context.Database.Migrate();
 }
 
+// MIDDLEWARES
+app.UseMiddleware<ErrorHandlerMiddleware>();
+
+
+// CONTROLLERS
 Ecommerce.Controllers.UserController.MapUserRoutes(app);
 Ecommerce.Controllers.ProductController.MapProductRoutes(app);
 Ecommerce.Controllers.CategoryController.MapCategoryRoutes(app);
