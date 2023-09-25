@@ -32,7 +32,8 @@ namespace Ecommerce.Middlewares{
             { typeof(ProductsByCategorySlugNotFound), HttpStatusCode.NotFound },
             { typeof(ProductNotFoundException), HttpStatusCode.NotFound },
             { typeof(ApplicationException), HttpStatusCode.BadRequest },
-            { typeof(ProductsByPriceRangeNotFound), HttpStatusCode.NotFound }
+            { typeof(ProductsByPriceRangeNotFound), HttpStatusCode.NotFound },
+            { typeof(ProductsByFilterNotFound), HttpStatusCode.NotFound }
         };
 
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)

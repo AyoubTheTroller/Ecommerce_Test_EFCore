@@ -13,4 +13,8 @@ namespace Ecommerce.Exceptions
     public class ProductsByPriceRangeNotFound : Exception{
         public ProductsByPriceRangeNotFound(double min, double max) : base($"Products with price range ({min} -- {max}) not found."){}
     }
+
+    public class ProductsByFilterNotFound : Exception{
+        public ProductsByFilterNotFound() : base("No products found based on the given filter."){}
+    }
 }

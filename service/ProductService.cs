@@ -1,5 +1,8 @@
+using Ecommerce.Exceptions;
+using Ecommerce.Filters;
 using Ecommerce.interfaces;
 using Ecommerce.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.services
 {
@@ -37,5 +40,29 @@ namespace Ecommerce.services
         {
             return await _unitOfWork.ProductRepository.GetAllByPriceRange(min,max);
         }
+
+        public async Task<List<Product>?> getAllProductsByFilter(ProductFilter productFilter)
+        {
+            var productsQuery = _unitOfWork.ProductRepository.AsQueryable();
+
+            if (productFilter.Slug != null){
+                productsQuery = productsQuery.Where(p => p.Category != null && p.Category.Slug == productFilter.Slug);
+            }
+            if (productFilter.Min.HasValue){
+                productsQuery = productsQuery.Where(p => p.price >= productFilter.Min);
+            }
+            if (productFilter.Max.HasValue){
+                productsQuery = productsQuery.Where(p => p.price <= productFilter.Max);
+            }
+
+            var products = await productsQuery.ToListAsync();
+
+            if (!products.Any()){
+                throw new ProductsByFilterNotFound();
+            }
+
+            return products;
+        }
+
     }
 }

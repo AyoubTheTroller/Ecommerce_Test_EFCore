@@ -1,4 +1,6 @@
+using Ecommerce.Filters;
 using Ecommerce.Models;
+
 namespace Ecommerce.interfaces{
     public interface IProductService{
         public Task<Product> addProduct(Product product);
@@ -6,5 +8,6 @@ namespace Ecommerce.interfaces{
         public Task<List<Product>> getAllProducts();
         public Task<List<Product>?> getAllProductsByCategorySlug(string slug);
         public Task<List<Product>?> getAllProductsByPriceRange(double min, double max); 
+        public Task<List<Product>?> getAllProductsByFilter(ProductFilter productFilter); 
     }
 }

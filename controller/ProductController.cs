@@ -1,5 +1,6 @@
 using Ecommerce.Models;
 using Ecommerce.interfaces;
+using Ecommerce.Filters;
 
 namespace Ecommerce.Controllers{
     public static class ProductController{
@@ -9,6 +10,16 @@ namespace Ecommerce.Controllers{
             MapCreateProduct(app);
             MapGetAllProductsByCategorySlug(app);
             MapGetAllProductsByPriceRange(app);
+            MapGetAllProductsByFilter(app);
+        }
+
+        private static void MapGetAllProductsByFilter(WebApplication app)
+        {
+            app.MapPost("/products/filter/", async (ProductFilter productFilter, IProductService productService) =>
+            {
+                var products = await productService.getAllProductsByFilter(productFilter);
+                return Results.Ok(products);
+            });
         }
 
         private static void MapGetAllProductsByCategorySlug(WebApplication app)

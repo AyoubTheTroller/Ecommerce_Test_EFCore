@@ -21,6 +21,11 @@ namespace Ecommerce.Repositories{
                 throw new ApplicationException($"Error when adding product: {ex.Message}");
             }
         }
+        public IQueryable<Product> AsQueryable()
+        {
+            return _context.Products.AsQueryable();
+        }
+
 
         public async Task<Product?> GetById(int id)
         {   
