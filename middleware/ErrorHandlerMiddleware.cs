@@ -31,6 +31,9 @@ namespace Ecommerce.Middlewares{
             if (ex is OrderMissingProductException) code = HttpStatusCode.BadRequest;
             else if (ex is OrderMissingOrderDetailsException) code = HttpStatusCode.BadRequest;
             else if (ex is ArgumentNullException) code = HttpStatusCode.BadRequest;
+            else if (ex is ProductsByCategorySlugNotFound) code = HttpStatusCode.NotFound;
+            else if (ex is ProductNotFoundException) code = HttpStatusCode.NotFound;
+            else if (ex is ApplicationException) code = HttpStatusCode.BadRequest;
 
             var result = JsonSerializer.Serialize(new { error = ex.Message });
             context.Response.ContentType = "application/json";

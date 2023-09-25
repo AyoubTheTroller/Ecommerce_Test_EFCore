@@ -33,5 +33,11 @@ namespace Ecommerce.Repositories{
         {
             return await _context.Products.ToListAsync();
         }
+
+        public async Task<List<Product>?> GetAllByCategorySlug(string slug){
+            var products = await _context.Products.Where(p => p.Category != null && p.Category.Slug == slug).ToListAsync();
+            if (!products.Any()) throw new ProductsByCategorySlugNotFound(slug);
+            return products;
+        }
     }
 }

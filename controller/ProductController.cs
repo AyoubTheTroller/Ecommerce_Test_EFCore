@@ -7,6 +7,16 @@ namespace Ecommerce.Controllers{
             MapGetAllProducts(app);
             MapGetProductById(app);
             MapCreateProduct(app);
+            MapGetAllProductsByCategorySlug(app);
+        }
+
+        private static void MapGetAllProductsByCategorySlug(WebApplication app)
+        {
+            app.MapGet("/products/category/{slug}", async (string slug, IProductService productService) =>
+            {
+                var products = await productService.getAllProductsByCategorySlug(slug);
+                return Results.Ok(products);
+            });
         }
 
         private static void MapGetAllProducts(WebApplication app){
@@ -17,10 +27,6 @@ namespace Ecommerce.Controllers{
             app.MapGet("/products/{id:int}", (int id, IProductService productService) =>
             {
                 var product = productService.getProduct(id);
-                if (product == null)
-                {
-                    return Results.NotFound($"Product with ID {id} was not found.");
-                }
                 return Results.Ok(product);
             });
         }
@@ -28,11 +34,6 @@ namespace Ecommerce.Controllers{
         private static void MapCreateProduct(WebApplication app){
             app.MapPost("/products/create", (Product product, IProductService productService) =>
             {
-                if (product == null)
-                {
-                    return Results.BadRequest("Invalid product data.");
-                }
-
                 var addedProduct = productService.addProduct(product);
                 return Results.Created($"/products/create/{addedProduct.Id}", addedProduct);
             });

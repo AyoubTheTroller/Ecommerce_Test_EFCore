@@ -5,5 +5,6 @@ namespace Ecommerce.interfaces{
         public Product Add(Product product);
         public Task<Product?> GetById(int id);
         public Task<List<Product>> GetAll();
+        public Task<List<Product>?> GetAllByCategorySlug(string slug); 
     }
 }

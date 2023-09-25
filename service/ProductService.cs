@@ -28,5 +28,9 @@ namespace Ecommerce.services
         {
             return await _unitOfWork.ProductRepository.GetById(id);
         }
+
+        public async Task<List<Product>?> getAllProductsByCategorySlug(string slug){
+            return await _unitOfWork.ProductRepository.GetAllByCategorySlug(slug);
+        }
     }
 }
