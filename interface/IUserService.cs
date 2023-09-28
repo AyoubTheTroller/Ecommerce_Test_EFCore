@@ -1,8 +1,10 @@
 using Ecommerce.Models;
+using Microsoft.AspNetCore.Identity;
+
 namespace Ecommerce.interfaces{
     public interface IUserService{
-        public Task<User> addUser(User user);
-        public Task<User?> getUser(int id);
-        public Task<List<User>> getAllUsers();
+        Task<IdentityUser> AddUser(IdentityUser user, string password);
+        Task<IList<IdentityUser>> GetAllUsers();
+        Task<IdentityUser?> GetUser(int userId);
     }
 }

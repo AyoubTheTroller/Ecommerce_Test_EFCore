@@ -1,21 +1,27 @@
+using System.Security.Claims;
 using Ecommerce.Models;
 using Ecommerce.interfaces;
 using Ecommerce.DTO;
 using Ecommerce.Exceptions;
 
-namespace Ecommerce.Controllers{
-    public static class OrderController{
-        public static void MapOrderRoutes(WebApplication app){
+namespace Ecommerce.Controllers
+{
+    public static class OrderController
+    {
+        public static void MapOrderRoutes(WebApplication app)
+        {
             MapGetAllOrders(app);
             MapGetOrderById(app);
             MapCreateOrder(app);
         }
 
-        private static void MapGetAllOrders(WebApplication app){
+        private static void MapGetAllOrders(WebApplication app)
+        {
             app.MapGet("/orders", (IOrderService orderService) => orderService.getAllOrders());
         }
 
-        private static void MapGetOrderById(WebApplication app){
+        private static void MapGetOrderById(WebApplication app)
+        {
             app.MapGet("/orders/{id:int}", (int id, IOrderService orderService) =>
             {
                 var order = orderService.getOrder(id);
@@ -23,36 +29,42 @@ namespace Ecommerce.Controllers{
                 {
                     return Results.NotFound($"Order with ID {id} was not found.");
                 }
+
                 return Results.Ok(order);
             });
         }
 
-        private static void MapCreateOrder(WebApplication app){
-            app.MapPost("/orders/create", (Order order, IOrderService orderService) => CreateOrderHandler(order, orderService));
+        private static void MapCreateOrder(WebApplication app)
+        {
+            app.MapPost("/orders/create",CreateOrderHandler);
         }
-
-        private static async Task<IResult> CreateOrderHandler(Order order, IOrderService orderService){
-            if (order == null)
+        private static async Task<IResult> CreateOrderHandler(RequestOrderDTO orderDto, IOrderService orderService,
+            HttpContext context)
+        {
+            var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
             {
-                throw new ArgumentNullException("Invalid order data.");
+                return Results.BadRequest("User ID not found in token.");
             }
 
-            var addedOrder = await orderService.addOrder(order);
+            orderDto.UserId = userId;
 
-            var orderDTO = new OrderDTO
+            var addedOrder = await orderService.addOrder(orderDto);
+
+            var dto = new OrderDTO
             {
                 Id = addedOrder.Id,
-                UserId = addedOrder.userId,
-                DateTime = addedOrder.dateTime,
-                TotalPrice = addedOrder.totalPrice,
-                OrderDetails = addedOrder.OrderDetails.Select(detail => new OrderDetailDTO 
+                UserId = addedOrder.UserId,
+                DateTime = addedOrder.DateTime,
+                TotalPrice = addedOrder.TotalPrice,
+                OrderDetails = addedOrder.OrderDetails.Select(detail => new OrderDetailDTO
                 {
                     Id = detail.Id,
                     ProductId = detail.productId
                 }).ToList()
             };
 
-            return Results.Ok(orderDTO);
+            return Results.Ok(dto);
         }
 
     }

@@ -3,6 +3,7 @@ using System;
 using Ecommerce.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EF_Core_Project_Ecommerce.Migrations
 {
     [DbContext(typeof(EcommerceDbContext))]
-    partial class EcommerceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230928114343_IdentyUserAndRoles")]
+    partial class IdentyUserAndRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
@@ -43,19 +46,18 @@ namespace EF_Core_Project_Ecommerce.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("DateTime")
+                    b.Property<DateTime>("dateTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<double>("TotalPrice")
+                    b.Property<double>("totalPrice")
                         .HasColumnType("REAL");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("userId")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("userId");
 
                     b.ToTable("Orders");
                 });
@@ -320,13 +322,13 @@ namespace EF_Core_Project_Ecommerce.Migrations
 
             modelBuilder.Entity("Ecommerce.Models.Order", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                    b.HasOne("Ecommerce.Models.User", "user")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("userId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.OrderDetail", b =>

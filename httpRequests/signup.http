@@ -1,0 +1,9 @@
+### Signup API
+POST http://localhost:5079/users/signup
+Content-Type: application/json
+
+{
+  "UserName": "testIdentityUser",
+  "Email": "example@email.com",
+  "Password": "PasswordSecure###123"
+}

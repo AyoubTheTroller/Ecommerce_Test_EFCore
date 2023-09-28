@@ -1,40 +1,50 @@
 using Ecommerce.interfaces;
-using Ecommerce.Models;
-using Ecommerce.Data;
-using Microsoft.EntityFrameworkCore;
 using Ecommerce.Exceptions;
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
-namespace Ecommerce.Repositories{
+namespace Ecommerce.Repositories
+{
     public class UserRepo : IUserRepo
     {
-        private readonly EcommerceDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UserRepo(EcommerceDbContext context)
+        public UserRepo(UserManager<IdentityUser> userManager)
         {
-            _context = context;
+            _userManager = userManager;
         }
 
-        public async Task<User> Add(User user){
-            if (user.Username is not null && await UserExistsAsync(user.Username))
+        public async Task<IdentityUser> Add(IdentityUser user, string password)
+        {
+            if (await UserExistsAsync(user.UserName))
             {
                 throw new UserAlreadyExistsException(user);
             }
-            await _context.Users.AddAsync(user);
+            var result = await _userManager.CreateAsync(user, password);
+            if (!result.Succeeded)
+            {
+                var errorMessages = result.Errors.Select(e => e.Description);
+                throw new FailedToCreateUserException(string.Join("; ", errorMessages));
+            }
             return user;
         }
 
-        public async Task<User?> Get(int id)
+        public async Task<IdentityUser?> Get(int userId)
         {
-            return await _context.Users.FirstOrDefaultAsync(a => a.Id == id);
+            return await _userManager.FindByIdAsync(userId.ToString());
         }
 
-        public async Task<List<User>> GetAll(){
-            return await _context.Users.ToListAsync();
+        public async Task <IList<IdentityUser>> GetAll()
+        {
+            return await _userManager.Users.ToListAsync();
         }
 
-        public async Task<bool> UserExistsAsync(string username){
-            return await _context.Users.AnyAsync(u => u.Username == username);
+        public async Task<bool> UserExistsAsync(string? username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            return user != null;
         }
-        
     }
 }

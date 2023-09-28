@@ -1,5 +1,7 @@
 using Ecommerce.interfaces;
-using Ecommerce.Models;
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Ecommerce.services
 {
@@ -12,21 +14,21 @@ namespace Ecommerce.services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<User> addUser(User user)
+        public async Task<IdentityUser> AddUser(IdentityUser user, string password)
         {
-            var addedUser = await _unitOfWork.UserRepository.Add(user);
+            var addedUser = await _unitOfWork.UserRepository.Add(user, password);
             await _unitOfWork.CommitAsync();
             return addedUser;
         }
 
-        public async Task<List<User>> getAllUsers()
+        public async Task<IList<IdentityUser>> GetAllUsers()
         {
             return await _unitOfWork.UserRepository.GetAll();
         }
 
-        public async Task<User?> getUser(int id)
+        public async Task<IdentityUser?> GetUser(int userId)
         {
-            return await _unitOfWork.UserRepository.Get(id);
+            return await _unitOfWork.UserRepository.Get(userId);
         }
     }
 }

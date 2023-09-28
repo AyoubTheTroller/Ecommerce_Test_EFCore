@@ -1,4 +1,5 @@
 using Ecommerce.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Ecommerce.Exceptions
 {
@@ -7,6 +8,10 @@ namespace Ecommerce.Exceptions
     }
 
     public class UserAlreadyExistsException : Exception{
-        public UserAlreadyExistsException(User user) : base($"User with username '{user.Username}' already exists."){}
+        public UserAlreadyExistsException(IdentityUser user) : base($"User with username '{user.UserName}' already exists."){}
+    }
+    
+    public class FailedToCreateUserException : Exception{
+        public FailedToCreateUserException(string? errors) : base(errors){}
     }
 }

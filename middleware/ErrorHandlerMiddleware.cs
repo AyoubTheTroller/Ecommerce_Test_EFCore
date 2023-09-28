@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using Ecommerce.DTO;
 using Ecommerce.Exceptions;
 
 namespace Ecommerce.Middlewares{
@@ -33,7 +34,10 @@ namespace Ecommerce.Middlewares{
             { typeof(ProductNotFoundException), HttpStatusCode.NotFound },
             { typeof(ApplicationException), HttpStatusCode.BadRequest },
             { typeof(ProductsByPriceRangeNotFound), HttpStatusCode.NotFound },
-            { typeof(ProductsByFilterNotFound), HttpStatusCode.NotFound }
+            { typeof(ProductsByFilterNotFound), HttpStatusCode.NotFound },
+            { typeof(UserAlreadyExistsException), HttpStatusCode.Conflict },
+            { typeof(UserNotFoundException), HttpStatusCode.NotFound },
+            { typeof(FailedToCreateUserException), HttpStatusCode.BadRequest }
         };
 
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)
@@ -44,8 +48,14 @@ namespace Ecommerce.Middlewares{
             {
                 code = statusCode;
             }
+            
+            var errorResponse = new ErrorResponseDTO
+            {
+                Error = "An error occurred.",
+                Details = ex.Message
+            };
 
-            var result = JsonSerializer.Serialize(new { error = ex.Message });
+            var result = JsonSerializer.Serialize(errorResponse);
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;
 

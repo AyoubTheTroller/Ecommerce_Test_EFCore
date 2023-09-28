@@ -1,17 +1,23 @@
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Ecommerce.Data;
 using Ecommerce.interfaces;
 using Ecommerce.services;
 using Ecommerce.Repositories;
-using Ecommerce.Models;
 using Ecommerce.Middlewares;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+IConfiguration configuration = builder.Configuration;
 
 builder.Services.AddDbContext<EcommerceDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
 );
 
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<EcommerceDbContext>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -24,8 +30,28 @@ builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 
+// Authentication middle layer for jwt tokens
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = configuration["Jwt:Issuer"],
+            ValidAudience = configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? string.Empty))
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 
 using (var scope = app.Services.CreateScope()){
     var context = scope.ServiceProvider.GetRequiredService<EcommerceDbContext>();
@@ -34,7 +60,6 @@ using (var scope = app.Services.CreateScope()){
 
 // MIDDLEWARES
 app.UseMiddleware<ErrorHandlerMiddleware>();
-
 
 // CONTROLLERS
 Ecommerce.Controllers.UserController.MapUserRoutes(app);

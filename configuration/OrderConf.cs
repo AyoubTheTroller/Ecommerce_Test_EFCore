@@ -6,7 +6,7 @@ namespace Ecommerce.Configurations{
     public class OrderConfiguration : IEntityTypeConfiguration<Order>{
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.HasKey(u => u.Id);
+            builder.HasOne(o => o.User).WithMany().HasForeignKey(o => o.UserId).IsRequired();
         }
     }
 }

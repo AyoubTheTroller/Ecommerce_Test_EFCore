@@ -1,3 +1,4 @@
+using Ecommerce.DTO;
 using Ecommerce.interfaces;
 using Ecommerce.Models;
 using Ecommerce.Exceptions;
@@ -13,41 +14,52 @@ namespace Ecommerce.services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Order> addOrder(Order order){
-            Order? newOrder;
-            if(order.OrderDetails.Any())
+        public async Task<Order> addOrder(RequestOrderDTO orderDto)
+        {
+            double total = 0;
+            
+            var newOrder = new Order
             {
-                double total = 0;
-                foreach(var detail in order.OrderDetails)
-                {
-                    detail.Order = order;
+                UserId = orderDto.UserId,
+                DateTime = orderDto.DateTime
+            };
 
-                    if(detail.Product?.price != null)
+            if (orderDto.OrderDetails.Any())
+            {
+                foreach (var detailDto in orderDto.OrderDetails)
+                {
+                    var product = await _unitOfWork.ProductRepository.GetById(detailDto.ProductId);
+                    if (product == null)
                     {
-                        total += detail.Product.price;
+                        throw new OrderMissingProductException(detailDto.ProductId);
                     }
-                    else{
-                        try{
-                            var product = await _unitOfWork.ProductRepository.GetById(detail.productId); // Forse sarebbe meglio avere un metodo nella repo per ritornare tutti i prodotti in base a una lista di id per fare meno viaggi a db
-                            if(product != null){
-                                detail.Product = product;
-                                total += product.price;
-                            }
-                        }catch (ProductNotFoundException){
-                            throw new OrderMissingProductException(detail.productId);
-                        }
-                    }
-                    _unitOfWork.OrderDetailRepository.Add(detail);
+
+                    total += product.price;
+
+                    var orderDetail = new OrderDetail
+                    {
+                        productId = detailDto.ProductId,
+                        Order = newOrder
+                    };
+
+                    newOrder.OrderDetails.Add(orderDetail);
+
+                    _unitOfWork.OrderDetailRepository.Add(orderDetail);
                 }
-                order.totalPrice = total;
-                newOrder = _unitOfWork.OrderRepository.Add(order);
-                await _unitOfWork.CommitAsync();
             }
-            else{
+            else
+            {
                 throw new OrderMissingOrderDetailsException();
             }
+            
+            newOrder.TotalPrice = total;
+
+            _unitOfWork.OrderRepository.Add(newOrder);
+            await _unitOfWork.CommitAsync();
+
             return newOrder;
         }
+
 
 
         public async Task<List<Order>> getAllOrders()
