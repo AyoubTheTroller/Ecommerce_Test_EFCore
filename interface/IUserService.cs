@@ -5,6 +5,6 @@ namespace Ecommerce.interfaces{
     public interface IUserService{
         Task<IdentityUser> AddUser(IdentityUser user, string password);
         Task<IList<IdentityUser>> GetAllUsers();
-        Task<IdentityUser?> GetUser(int userId);
+        Task<IdentityUser?> GetUser(string userId);
     }
 }

@@ -26,7 +26,7 @@ namespace Ecommerce.services
             return await _unitOfWork.UserRepository.GetAll();
         }
 
-        public async Task<IdentityUser?> GetUser(int userId)
+        public async Task<IdentityUser?> GetUser(string userId)
         {
             return await _unitOfWork.UserRepository.Get(userId);
         }

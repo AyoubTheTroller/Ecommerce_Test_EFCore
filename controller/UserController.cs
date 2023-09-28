@@ -33,7 +33,7 @@ namespace Ecommerce.Controllers{
         }
 
         private static void MapGetUserById(WebApplication app){
-            app.MapGet("/users/{id:int}", async (int id, IUserService userService) =>
+            app.MapGet("/users/{id}", async (string id, IUserService userService) =>
             {
                 var user = await userService.GetUser(id);
                 if (user == null)

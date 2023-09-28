@@ -25,11 +25,6 @@ namespace Ecommerce.Controllers
             app.MapGet("/orders/{id:int}", (int id, IOrderService orderService) =>
             {
                 var order = orderService.getOrder(id);
-                if (order == null)
-                {
-                    return Results.NotFound($"Order with ID {id} was not found.");
-                }
-
                 return Results.Ok(order);
             });
         }
@@ -38,8 +33,7 @@ namespace Ecommerce.Controllers
         {
             app.MapPost("/orders/create",CreateOrderHandler);
         }
-        private static async Task<IResult> CreateOrderHandler(RequestOrderDTO orderDto, IOrderService orderService,
-            HttpContext context)
+        private static async Task<IResult> CreateOrderHandler(RequestOrderDTO orderDto, IOrderService orderService, HttpContext context)
         {
             var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))

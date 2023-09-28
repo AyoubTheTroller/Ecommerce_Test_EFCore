@@ -31,9 +31,9 @@ namespace Ecommerce.Repositories
             return user;
         }
 
-        public async Task<IdentityUser?> Get(int userId)
+        public async Task<IdentityUser?> Get(string userId)
         {
-            return await _userManager.FindByIdAsync(userId.ToString());
+            return await _userManager.FindByIdAsync(userId);
         }
 
         public async Task <IList<IdentityUser>> GetAll()
